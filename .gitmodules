@@ -1,0 +1,3 @@
+[submodule "aevLogger"]
+	path = aevLogger
+	url = git@github.com:aevalo/aevLogger.git
