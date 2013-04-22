@@ -1,0 +1,47 @@
+CC=g++
+
+APR_CFLAGS=`pkg-config --cflags apr-1`
+APR_LDFLAGS=`pkg-config --libs apr-1`
+APR_UTIL_CFLAGS=`pkg-config --cflags apr-util-1`
+APR_UTIL_LDFLAGS=`pkg-config --libs apr-util-1`
+
+SHATEST_SOURCES=shatest.cpp
+SHORTOPTS_SOURCES=shortopts.cpp
+LONGOPTS_SOURCES=longopts.cpp
+SOURCES=$(SHATEST_SOURCES) $(SHORTOPTS_SOURCES) $(LONGOPTS_SOURCES)
+
+SHATEST_OBJECTS=$(SHATEST_SOURCES:.cpp=.o)
+SHORTOPTS_OBJECTS=$(SHORTOPTS_SOURCES:.cpp=.o)
+LONGOPTS_OBJECTS=$(LONGOPTS_SOURCES:.cpp=.o)
+OBJECTS=$(SHATEST_OBJECTS) $(SHORTOPTS_OBJECTS) $(LONGOPTS_OBJECTS)
+
+SHATEST_EXECUTABLE=shatest
+SHORTOPTS_EXECUTABLE=shortopts
+LONGOPTS_EXECUTABLE=longopts
+EXECUTABLES=$(SHATEST_EXECUTABLE) $(SHORTOPTS_EXECUTABLE) $(LONGOPTS_EXECUTABLE)
+
+all: init $(SHATEST_EXECUTABLE) $(SHORTOPTS_EXECUTABLE) $(LONGOPTS_EXECUTABLE)
+
+init:
+	@mkdir tmp
+	
+
+$(SHATEST_EXECUTABLE): $(SHATEST_OBJECTS)
+	@echo "Linking $@..."
+	@$(CC) $(APR_LDFLAGS) $(APR_UTIL_LDFLAGS) ./tmp/$(SHATEST_OBJECTS) -o $@
+
+$(SHORTOPTS_EXECUTABLE): $(SHORTOPTS_OBJECTS)
+	@echo "Linking $@..."
+	@$(CC) $(APR_LDFLAGS) $(APR_UTIL_LDFLAGS) ./tmp/$(SHORTOPTS_OBJECTS) -o $@
+
+$(LONGOPTS_EXECUTABLE): $(LONGOPTS_OBJECTS)
+	@echo "Linking $@..."
+	@$(CC) $(APR_LDFLAGS) $(APR_UTIL_LDFLAGS) ./tmp/$(LONGOPTS_OBJECTS) -o $@
+
+.cpp.o: init
+	@echo "Compiling $<..."
+	@$(CC) -c $(APR_CFLAGS) $(APR_UTIL_CFLAGS) $< -o ./tmp/$@
+
+clean:
+	@echo "Removing temporary files..."
+	@rm -rf $(EXECUTABLES) ./tmp/
